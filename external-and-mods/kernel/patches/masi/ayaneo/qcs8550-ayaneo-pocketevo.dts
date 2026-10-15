@@ -14,9 +14,74 @@
 	qcom,msm-id = <0x258 0x20000>, <0x259 0x20000>;
 	compatible = "ayaneo,pocketevo", "qcom,qcs8550", "qcom,sm8550";
 	rocknix-u-boot-dt-id = "u-boot-pocket-evo";
+
+	/*
+	 * Extra buttons on TLMM GPIOs (values from the stock Android DT,
+	 * soc/gpio_key + tlmm_key_default). Measured on the EVO:
+	 *   left inner trigger button  -> gpio170 KEY_RIGHTSHIFT
+	 *   right inner trigger button -> gpio91  KEY_LEFT
+	 *   right-side AYANEO button   -> gpio85  KEY_A
+	 *   right-side lower button    -> gpio169 KEY_EQUAL
+	 * gpio88 and gpio109 (turbo) are in the Android DT but gave no events.
+	 */
+	gpio-keys-pocket-evo {
+		compatible = "gpio-keys";
+		label = "gpio-keys-pocket-evo";
+		pinctrl-names = "default";
+		pinctrl-0 = <&evo_keys_default>;
+
+		key-aya {
+			label = "AYANEO";
+			gpios = <&tlmm 85 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_A>;
+			debounce-interval = <15>;
+		};
+
+		key-equal {
+			label = "EQUAL";
+			gpios = <&tlmm 169 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_EQUAL>;
+			debounce-interval = <15>;
+		};
+
+		key-lc {
+			label = "LC";
+			gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_LEFT>;
+			debounce-interval = <15>;
+		};
+
+		key-rc {
+			label = "RC";
+			gpios = <&tlmm 88 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RIGHT>;
+			debounce-interval = <15>;
+		};
+
+		key-rc2 {
+			label = "RC2";
+			gpios = <&tlmm 170 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RIGHTSHIFT>;
+			debounce-interval = <15>;
+		};
+
+		key-turbo {
+			label = "TURBO";
+			gpios = <&tlmm 109 GPIO_ACTIVE_LOW>;
+			linux,code = <400>;
+			debounce-interval = <15>;
+		};
+	};
 };
 
 &tlmm {
+	evo_keys_default: evo-keys-default-state {
+		pins = "gpio85", "gpio88", "gpio91", "gpio109", "gpio169", "gpio170";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+
 	panel_pwr_active: panel-pwr-active-state {
 		pins = "gpio152", "gpio153";
 		function = "gpio";
