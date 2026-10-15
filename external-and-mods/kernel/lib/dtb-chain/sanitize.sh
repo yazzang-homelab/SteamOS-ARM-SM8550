@@ -25,6 +25,13 @@ drop_names = (
     "framebuffer@",
 )
 
+# Boards whose panel stays dark without the ABL continuous-splash reservation.
+# AYANEO Pocket EVO: dropping splash_region@b8000000 leaves the panel black
+# (DSI/DPU fine, TE ~55 Hz instead of 120); keeping only that node fixes it.
+keep_splash_region = ('"ayaneo,pocketevo"',)
+if any(c in text for c in keep_splash_region):
+    drop_names = tuple(d for d in drop_names if d != "splash_region")
+
 for line in lines:
     stripped = line.strip()
     if skip:
